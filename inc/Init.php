@@ -4,6 +4,7 @@
 namespace app;
 
 
+use app\Menu\Admin;
 use app\Base;
 
 final class Init
@@ -11,6 +12,7 @@ final class Init
 	private static function get_services(): array {
 		// return class names with namespaces
 		return [
+			Admin::class,
 			Base\Enqueue::class,
 			Base\Model::class
 		];
