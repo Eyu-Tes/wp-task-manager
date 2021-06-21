@@ -1,0 +1,15 @@
+{
+    "name": "eutes/task-mgr",
+    "autoload": {
+        "psr-4": {
+            "app\\": "inc/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Eyu-Tes",
+            "email": "eyoabtesfaye10@gmail.com"
+        }
+    ],
+    "require": {}
+}
