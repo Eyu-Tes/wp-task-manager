@@ -14,6 +14,7 @@ const PLUGIN_FILE_URL = __FILE__;
 
 use app\Base\Activate;
 use app\Base\Deactivate;
+use app\Init;
 
 //activate plugin
 function activate_taskmgr() {
@@ -26,6 +27,11 @@ function deactivate_taskmgr(){
 	Deactivate::deactivate();
 }
 register_deactivation_hook( __FILE__, 'deactivate_taskmgr' );
+
+//instantiate classes
+if( class_exists( 'app\Init' ) ){
+	Init::register_services();
+}
 
 // hide admin toolbar from frontend
 add_filter('show_admin_bar', '__return_false');

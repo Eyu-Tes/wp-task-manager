@@ -1,0 +1,11 @@
+* {
+    font-family: "Trebuchet MS", serif;
+}
+
+#task-form {
+    max-width: 550px;
+}
+
+.underline-on-hover:hover {
+    text-decoration: underline !important;
+}
