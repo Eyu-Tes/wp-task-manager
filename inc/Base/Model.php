@@ -77,9 +77,81 @@ class Model extends BaseController
 		}
 	}
 
-	/** Manage pages */
+	/** Check if role is allowed */
+	public static function role_is_allowed(): bool {
+		$current_user = wp_get_current_user();
+		$roles = $current_user->roles;
+		$target_roles = ['administrator', 'editor'];
+		return count(array_intersect($roles, $target_roles)) > 0;
+	}
+
+	/** Record a new task */
+	public static function taskmgr_addtask(array $newdata) {
+		$wptask_table = self::$wpdb->prefix . "tm_task";
+		$wptask_query = "INSERT INTO $wptask_table 
+    	( title, `desc`, `from`, `to`, deadline, status, priority) 
+    	VALUES ('$newdata[wptask_title]', '$newdata[wptask_description]', '$newdata[wptask_from]', '$newdata[wptask_to]', '$newdata[wptask_deadline]', '$newdata[wptask_status]', '$newdata[wptask_priority]')";
+		self::$wpdb->query($wptask_query);
+	}
+
+	/** Update a task */
+	public static function taskmgr_updatetask(array $newdata) {
+		$wptask_table = self::$wpdb->prefix . "tm_task";
+		$wptask_query = "UPDATE $wptask_table SET title='$newdata[wptask_title]', `desc`='$newdata[wptask_description]', `to`='$newdata[wptask_to]', deadline='$newdata[wptask_deadline]', status='$newdata[wptask_status]', priority='$newdata[wptask_priority]' WHERE id=$newdata[wptask_taskid]";
+		self::$wpdb->query($wptask_query);
+	}
+
+	/** Delete a task */
+	public static function taskmgr_deletetask(int $id) {
+		if(isset($id)){
+			$wptask_table = self::$wpdb->prefix . "tm_task";
+			self::$wpdb->query("DELETE FROM $wptask_table WHERE id=$id");
+			echo '<script>window.location.href="?page=wp-task"</script>';
+		}
+	}
+
+	/** Create a task */
+	public static function taskmgr_add() {
+		require_once(parent::$plugin_path . 'templates/add_task.php');
+	}
+
+	/** Edit a task */
+	public static function taskmgr_edit(int $id) {
+		if(isset($id) && !empty($id)){
+			$wptask_table = self::$wpdb->prefix . "tm_task";
+			$wptask_edit_item = self::$wpdb->get_results("SELECT * FROM $wptask_table WHERE id=$id");
+			if(!$wptask_edit_item) {
+				echo'<div class="wrap"><h2>There is no such task to edit. Please add one first.</h2></div>';
+			}
+			else {
+				require_once(parent::$plugin_path . 'templates/edit_task.php');
+			}
+		}
+	}
+
+	/** View a task */
+	public static function taskmgr_view(int $id) {
+		if(isset($id) && !empty($id)){
+			$wptask_table = self::$wpdb->prefix . "tm_task";
+			$wptask_view_item = self::$wpdb->get_results("SELECT * FROM $wptask_table WHERE id=$id");
+			if(!$wptask_view_item) {
+				echo'<div class="wrap"><h2>There is no such task to view. Please add one first.</h2></div>';
+			}else{
+				require_once parent::$plugin_path.'templates/view_task.php';
+			}
+		}
+	}
+
+	/** Admin CP manage page */
 	public static function taskmgr_manage() {
-		require_once parent::$plugin_path.'templates/admin.php';
+		if(isset($_POST['wptask_addtask']) && isset($_POST['wptask_title'])) self::taskmgr_addtask($_POST);
+		if(isset($_POST['taskmgr_updatetask'])) self::taskmgr_updatetask($_POST);
+		if(isset($_POST['wptask_deletetask'])) self::taskmgr_deletetask($_POST['wptask_taskid']);
+
+		if(isset($_GET['add'])) self::taskmgr_add();
+		else if(isset($_GET['view'])) self::taskmgr_view($_GET['view']);
+		else if(isset($_GET['edit'])) self::taskmgr_edit($_GET['edit']);
+		else require_once parent::$plugin_path.'templates/all_tasks.php';
 	}
 
 	/** List tasks */

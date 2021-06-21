@@ -1,6 +1,10 @@
 <div class="container">
     <h1 class="text-center my-3"><?php _e("Task Management", 'wptask'); ?></h1>
 
+    <?php if (self::role_is_allowed()) { ?>
+        <a href="?page=wp-task&add" class="btn btn-secondary">New Task</a>
+    <?php } ?>
+
     <div class="table-responsive-lg">
         <table id="task" class="table">
             <thead>
