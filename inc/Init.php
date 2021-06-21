@@ -12,6 +12,7 @@ final class Init
 		// return class names with namespaces
 		return [
 			Base\Enqueue::class,
+			Base\Model::class
 		];
 	}
 
